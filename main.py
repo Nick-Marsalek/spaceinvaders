@@ -39,7 +39,7 @@ class Game:
                     x, y = event.pos
                     if self.renderer.play_button.is_clicked((x, y)):
                         # If play button is clicked, start the game
-                        self.state = GameState.GAME
+                        self.state = GameState.LEVEL_ONE
                     elif self.renderer.quit_button.is_clicked((x, y)):
                         # If quit button is clicked, exit the game
                         sys.exit()
