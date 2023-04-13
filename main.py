@@ -1,25 +1,71 @@
 import pygame
+import sys
+from gamestate import GameState
+from rendering import Renderer, Button
 
-# Initialize Pygame
-pygame.init()
 
-# Set up the window
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Space Invaders")
+def on_cleanup():
+    # Clean up the Pygame library when the game is done
+    pygame.quit()
 
-# Run the game loop
-running = True
-while running:
-    # Handle events
-    for event in pygame.event.get():
+
+class Game:
+    def __init__(self):
+        # Initialize the Pygame library and set the window caption
+        pygame.init()
+        pygame.display.set_caption("Space Invaders")
+
+        # Set the width and height of the game window
+        self.width = 800
+        self.height = 600
+
+        # Create a display surface object to draw on
+        self._display_surf = pygame.display.set_mode((self.width, self.height), pygame.HWSURFACE)
+
+        # Set the initial game state to the menu screen
+        self.state = GameState.MENU
+
+        # Create a renderer object to draw the game
+        self.renderer = Renderer(self._display_surf, self.width, self.height)
+
+    def on_event(self, event):
+        # Handle events such as quitting the game
         if event.type == pygame.QUIT:
-            running = False
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if self.state == GameState.MENU:
+                    # Check if play or quit button is clicked
+                    x, y = event.pos
+                    if self.renderer.play_button.is_clicked((x, y)):
+                        # If play button is clicked, start the game
+                        self.state = GameState.GAME
+                    elif self.renderer.quit_button.is_clicked((x, y)):
+                        # If quit button is clicked, exit the game
+                        sys.exit()
 
-    # Update the screen
-    screen.fill((255, 255, 255))  # Fill the screen with white
-    pygame.display.flip()  # Update the display
+    def on_render(self):
+        # Render the current game state using the renderer
+        self.renderer.render(self.state)
 
-# Quit Pygame
-pygame.quit()
+        # Update the display surface to show the new frame
+        pygame.display.flip()
+
+    def run_game(self):
+        # Main game loop
+        while True:
+            # Handle events such as quitting the game
+            for event in pygame.event.get():
+                self.on_event(event)
+
+            # Render the current game state
+            self.on_render()
+
+        # Clean up the Pygame library when the game is done
+        on_cleanup()
+
+
+if __name__ == "__main__":
+    # Create a new game object and run the game
+    theGame = Game()
+    theGame.run_game()
