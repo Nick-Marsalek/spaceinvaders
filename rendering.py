@@ -1,6 +1,7 @@
 import pygame
 import pygame.image
 from gamestate import GameState
+import level_one_loop as l1
 
 
 # Define a Button class to create interactive buttons
@@ -115,7 +116,8 @@ class Renderer:
             self.quit_button.draw(self.display_surf)
         elif state == GameState.LEVEL_ONE:
             # Render Game Stuff here later
-            self.display_surf.fill((0, 0, 0))
+            #Not working yet V
+            #l1.level_one(self.display_surf)
             pass
 
     def handle_events(self, event):
