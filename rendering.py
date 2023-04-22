@@ -115,10 +115,10 @@ class Renderer:
             pygame.draw.rect(self.display_surf, (255, 0, 0), self.exit_button_rect, 3)
             self.quit_button.draw(self.display_surf)
         elif state == GameState.LEVEL_ONE:
-            # Render Game Stuff here later
-            #Not working yet V
+            # WORKING
+            # This takes you to a new game loop for level 1
             l1.level_one(self.display_surf)
-            #pass
+            # pass
 
     def handle_events(self, event):
         # Handle events such as clicking the buttons
