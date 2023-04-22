@@ -117,8 +117,8 @@ class Renderer:
         elif state == GameState.LEVEL_ONE:
             # Render Game Stuff here later
             #Not working yet V
-            #l1.level_one(self.display_surf)
-            pass
+            l1.level_one(self.display_surf)
+            #pass
 
     def handle_events(self, event):
         # Handle events such as clicking the buttons
