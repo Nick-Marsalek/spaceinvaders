@@ -1,5 +1,5 @@
 import pygame
-import constants as c
+import GAME_CONSTANTS as c
 
 
 class Entity(pygame.sprite.Sprite):
@@ -100,3 +100,41 @@ class PlayerBolt(Entity):
         # Determine if this bolt is off-screen
         if(self.get_y() < 0):
             self.is_off_screen = True
+
+
+class BarrierBlock(Entity):
+    def __init__(self, display_width, display_height, x, y, health_image4, health_image3, health_image2, health_image1):
+        # For inheritance
+        Entity.__init__(self, display_width, display_height, x, y, health_image4)
+
+        # Set starting health variables
+        self.barrier_health = 4
+        self.destroyed = False
+
+        # Set images for each stage of health
+        self.health_image4 = health_image4
+        self.health_image3 = health_image3
+        self.health_image2 = health_image2
+        self.health_image1 = health_image1
+
+    # Getter for whether block should be destroyed
+    def get_destroyed(self):
+        return self.destroyed
+
+    # Function to decrease block's health
+    def damage(self):
+        if self.barrier_health >= 0:
+            self.barrier_health -= 1
+        if self.barrier_health <= 0:
+            self.destroyed = True
+
+    # Update function switches current image depending on current health
+    def update(self):
+        if self.barrier_health >= 4:
+            self.image = self.health_image4
+        elif self.barrier_health == 3:
+            self.image = self.health_image3
+        elif self.barrier_health == 2:
+            self.image = self.health_image2
+        else:
+            self.image = self.health_image1
