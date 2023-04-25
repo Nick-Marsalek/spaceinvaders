@@ -1,6 +1,7 @@
 import pygame
 import pygame.image
 from gamestate import GameState
+from enemy import Enemy
 
 
 # Define a Button class to create interactive buttons
@@ -70,28 +71,6 @@ class Renderer:
         self.quit_button = Button(self.exit_button_rect.x, self.exit_button_rect.y, self.exit_button_rect.width,
                                   self.exit_button_rect.height, (255, 0, 0), "Quit", 40, (255, 255, 255))
 
-            # def render(self, state):
-
-    #     # Render the menu screen
-    #     if state == GameState.MENU:
-    #         # Render the title and subtitle text
-    #         title = self.title_font.render("Space Invaders", True, (255, 55, 55))
-    #         play_button_text = self.button_font.render("Play", True, (255, 255, 255))
-    #         exit_button_text = self.button_font.render("Exit", True, (255, 255, 255))
-    #         # Display the background image, title and subtitle text, and buttons
-    #         self.display_surf.blit(self.background_image, (0, 0))
-    #         self.display_surf.blit(title, (self.width // 2 - title.get_width() // 2, self.height // 2 - 100))
-    #         pygame.draw.rect(self.display_surf, (0, 255, 0), self.play_button_rect, 3)
-    #         self.display_surf.blit(play_button_text,
-    #                                (self.width // 2 - play_button_text.get_width() // 2, self.height // 2 + 35))
-    #         pygame.draw.rect(self.display_surf, (255, 0, 0), self.exit_button_rect, 3)
-    #         self.display_surf.blit(exit_button_text,
-    #                                (self.width // 2 - exit_button_text.get_width() // 2, self.height // 2 + 95))
-    #
-    #     elif state == GameState.LEVEL_ONE:
-    #         # Render Game Stuff here later
-    #         self.display_surf.fill((0, 0, 0))
-    #         pass
     def render(self, state):
         # Render the menu screen
         if state == GameState.MENU:
@@ -116,7 +95,16 @@ class Renderer:
         elif state == GameState.LEVEL_ONE:
             # Render Game Stuff here later
             self.display_surf.fill((0, 0, 0))
-            pass
+            enemy1 = Enemy(1)
+            # self.display_surf.blit(enemy1.getFrame1(), (48, 0))
+            # self.display_surf.blit(enemy1.getFrame2(), (0, 0))
+            if enemy1.currentFrame == 1:
+                enemy1.currentFrame = 2
+                self.display_surf.blit(enemy1.getFrame2(), (0, 0))
+            else:
+                enemy1.currentFrame = 1
+                self.display_surf.blit(enemy1.getFrame1(), (0, 0))
+
 
     def handle_events(self, event):
         # Handle events such as clicking the buttons
