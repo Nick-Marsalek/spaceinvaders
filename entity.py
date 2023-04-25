@@ -59,11 +59,9 @@ class Player(Entity):
     def update(self):
         if ((self.get_x() >= 1) and self.moving_left == True):
             self.move(-c.PLAYER_MOVE_INCREMENTS, 0)
-            print(self.get_x())
 
         if ((self.get_x() <= (self.display_width - self.width)) and self.moving_right == True):
             self.move(c.PLAYER_MOVE_INCREMENTS, 0)
-            print(self.get_x())
 
     # Getters for Player's states
     def get_firing(self):
