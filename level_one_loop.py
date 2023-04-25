@@ -50,14 +50,25 @@ def level_one(display_surface):
         if ((frame_counter % c.FRAMES_PER_PLAYER_MOVEMENT) == 0):
             player_group.update()
 
+        # Replaced by a different method of restricting firing, that also eliminates lingering bolts
         # If player should be firing, fire a bolt and then start a cooldown
-        if (firing_cooldown <= 0):
-            if player.get_firing():
+        # if (firing_cooldown <= 0):
+            # if player.get_firing():
                 # These bolt entities just stick around and aren't deleted,
                 # May be a problem if too many are fired over the course of the game
                 # But it should be fine if it's under 10,000
-                player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
-                firing_cooldown = c.PLAYER_FIRING_COOLDOWN
+                # player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
+                # firing_cooldown = c.PLAYER_FIRING_COOLDOWN
+
+        # Delete any player bolts that go off-screen
+        for bolt in player_bolt_group:
+            if bolt.get_off_screen():
+                bolt.kill()
+
+        # Fire a bolt only if there aren't too many bolts already on-screen
+        # This matches the real Space Invaders behaviour more closely if limit is set to 1
+        if (len(player_bolt_group) < c.PLAYER_BOLTS_ONSCREEN_LIMIT) and player.get_firing():
+            player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
 
         # Update(move) all the bolts from the player
         if (frame_counter % c.FRAMES_PER_PLAYER_BOLT_MOVEMENT) == 0:
