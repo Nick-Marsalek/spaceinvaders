@@ -59,11 +59,9 @@ class Player(Entity):
     def update(self):
         if ((self.get_x() >= 1) and self.moving_left == True):
             self.move(-c.PLAYER_MOVE_INCREMENTS, 0)
-            print(self.get_x())
 
         if ((self.get_x() <= (self.display_width - self.width)) and self.moving_right == True):
             self.move(c.PLAYER_MOVE_INCREMENTS, 0)
-            print(self.get_x())
 
     # Getters for Player's states
     def get_firing(self):
@@ -89,6 +87,16 @@ class PlayerBolt(Entity):
 
         # Player that fired this bolt
         self.player = player
+        self.is_off_screen = False
+
+    # Getter for whether bolt is off-screen
+    def get_off_screen(self):
+        return self.is_off_screen
 
     def update(self):
+        # Move up at constant speed forever
         self.move(0, -c.PLAYER_BOLT_MOVE_INCREMENTS)
+
+        # Determine if this bolt is off-screen
+        if(self.get_y() < 0):
+            self.is_off_screen = True
