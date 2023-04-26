@@ -98,7 +98,7 @@ class PlayerBolt(Entity):
         self.move(0, -c.PLAYER_BOLT_MOVE_INCREMENTS)
 
         # Determine if this bolt is off-screen
-        if(self.get_y() < 0):
+        if (self.get_y() < 0):
             self.is_off_screen = True
 
 
@@ -138,3 +138,58 @@ class BarrierBlock(Entity):
             self.image = self.health_image2
         else:
             self.image = self.health_image1
+
+
+class Enemy(Entity):
+    def __init__(self, display_width, display_height, image, frame1img, frame2img):
+        # For inheritance
+        Entity.__init__(self, display_width, display_height, (display_width / 2) - 15, display_height - 35, image)
+        self.frame1img = frame1img
+        self.frame2img = frame2img
+        self.frame1 = False
+        self.shoot = True
+        self.x = display_width
+        self.y = display_height
+
+    def update(self, newx, newy):
+        self.move(newx, newy)
+        self.x += newx
+        self.y += newy
+        if self.frame1:
+            self.image = self.frame1img
+            self.frame1 = False
+        else:
+            self.image = self.frame2img
+            self.frame1 = True
+
+    def get_enemy_x(self):
+        return self.x
+
+    def get_enemy_y(self):
+        return self.y
+
+    def add_x(self, num):
+        self.x += num
+
+    def add_y(self, num):
+        self.y += num
+
+
+class EnemyBolt(Entity):
+    def __init__(self, display_width, display_height, image):
+        Entity.__init__(self, display_width, display_height, (display_width / 2) - 15, display_height - 35, image)
+
+        # Player that fired this bolt
+        self.is_off_screen = False
+
+    # Getter for whether bolt is off-screen
+    def get_off_screen(self):
+        return self.is_off_screen
+
+    def update(self):
+        # Move up at constant speed forever
+        self.move(0, c.PLAYER_BOLT_MOVE_INCREMENTS)
+
+        # Determine if this bolt is off-screen
+        if (self.get_y() < 0):
+            self.is_off_screen = True

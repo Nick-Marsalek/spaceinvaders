@@ -1,4 +1,5 @@
 import sys
+import random
 import pygame
 import entity
 import GAME_CONSTANTS as c
@@ -10,24 +11,40 @@ PLAYER_FIRING_COOLDOWN = 100
 PLAYER_BOLTS_ONSCREEN_LIMIT = 1
 BARRIER_NUMBER = 4
 BARRIER_DISTANCE = 40
+ENEMY_NUMBER = 5
+
 
 def level_one(display_surface):
     # Load images into pygame
     player_image = pygame.image.load('Assets/player_small.png').convert_alpha()
     player_bolt_image = pygame.image.load('Assets/player_bolt.png').convert_alpha()
+
     bb_image_4 = pygame.image.load('Assets/barrier_block4.png').convert_alpha()
     bb_image_3 = pygame.image.load('Assets/barrier_block3.png').convert_alpha()
     bb_image_2 = pygame.image.load('Assets/barrier_block2.png').convert_alpha()
     bb_image_1 = pygame.image.load('Assets/barrier_block1.png').convert_alpha()
 
+    enemy_frame1_image = pygame.image.load('Assets/enemy.png').convert_alpha()
+    enemy_frame2_image = pygame.image.load('Assets/enemy2.png').convert_alpha()
+
     # Create groups for the entities
     player_group = pygame.sprite.GroupSingle()
     player_bolt_group = pygame.sprite.Group()
+
     barrier_group = pygame.sprite.Group()
+
+    enemy_group = pygame.sprite.Group()
+
+    enemy_bolt_group = pygame.sprite.Group()
 
     # Create the player and put it in its own group
     player = entity.Player(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player_image)
     player_group.add(player)
+
+    # enemy = entity.Enemy(30, 40, enemy_frame1_image, enemy_frame1_image, enemy_frame2_image)
+    # enemy_group.add(enemy)
+    # enemyBolt = entity.EnemyBolt(30, 40, player_bolt_image)
+    # enemy_bolt_group.add(enemyBolt)
 
     # Create clock object and frame-counting variables
     clock = pygame.time.Clock()
@@ -35,14 +52,14 @@ def level_one(display_surface):
     firing_cooldown = 0
 
     # Calculate where each barrier should go based on display and barrier dimensions
-    barrier_width = bb_image_4.get_width()*4
-    barrier_height = bb_image_4.get_width()*3
+    barrier_width = bb_image_4.get_width() * 4
+    barrier_height = bb_image_4.get_width() * 3
 
-    segment_width = c.DISPLAY_WIDTH/BARRIER_NUMBER
+    segment_width = c.DISPLAY_WIDTH / BARRIER_NUMBER
     leftover_width = segment_width - barrier_width
 
     barrier_y = c.DISPLAY_HEIGHT - player.get_entity_height() - barrier_height - BARRIER_DISTANCE
-    barrier_x = leftover_width/2
+    barrier_x = leftover_width / 2
     barrier_x_offset = leftover_width + barrier_width
 
     # Create barriers with build_barrier function
@@ -51,7 +68,26 @@ def level_one(display_surface):
                       bb_image_4, bb_image_3, bb_image_2, bb_image_1)
         barrier_x += barrier_x_offset
 
-    while (True):
+    # Spawn Enemies
+    # spawnEnemies(enemy_frame1_image, enemy_frame1_image, enemy_frame2_image, enemy_group)
+
+    x = 30
+    y = 40
+    for i in range(0, ENEMY_NUMBER):
+        enemy = entity.Enemy(x, y, enemy_frame1_image, enemy_frame1_image, enemy_frame2_image)
+        enemy_group.add(enemy)
+        x += 100
+    x = 30
+    for i in range(0, ENEMY_NUMBER):
+        enemy = entity.Enemy(x, y + 50, enemy_frame1_image, enemy_frame1_image, enemy_frame2_image)
+        enemy_group.add(enemy)
+        x += 100
+
+    enemy_x = 0
+    enemy_y = 0
+    enemy_direction = "Right"
+
+    while True:
         # Sets the game loop to run this many times each second
         # I.E. This many frames per second
         clock.tick(c.GAME_LOOPS_PER_SECOND)
@@ -83,15 +119,18 @@ def level_one(display_surface):
         # Replaced by a different method of restricting firing, that also eliminates lingering bolts
         # If player should be firing, fire a bolt and then start a cooldown
         # if (firing_cooldown <= 0):
-            # if player.get_firing():
-                # These bolt entities just stick around and aren't deleted,
-                # May be a problem if too many are fired over the course of the game
-                # But it should be fine if it's under 10,000
-                # player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
-                # firing_cooldown = c.PLAYER_FIRING_COOLDOWN
+        # if player.get_firing():
+        # These bolt entities just stick around and aren't deleted,
+        # May be a problem if too many are fired over the course of the game
+        # But it should be fine if it's under 10,000
+        # player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
+        # firing_cooldown = c.PLAYER_FIRING_COOLDOWN
 
         # Delete any player bolts that go off-screen
         for bolt in player_bolt_group:
+            if bolt.get_off_screen():
+                bolt.kill()
+        for bolt in enemy_bolt_group:
             if bolt.get_off_screen():
                 bolt.kill()
 
@@ -100,6 +139,14 @@ def level_one(display_surface):
         if (len(player_bolt_group) < PLAYER_BOLTS_ONSCREEN_LIMIT) and player.get_firing() and firing_cooldown <= 0:
             player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
             firing_cooldown = PLAYER_FIRING_COOLDOWN
+
+        for enemy in enemy_group:
+            randomNumber = random.randint(0, 500*(enemy in enemy_group))
+            if randomNumber == 100:
+                enemy_bolt = entity.EnemyBolt(enemy.get_enemy_x()+45, enemy.get_enemy_y()+30, player_bolt_image)
+                enemy_bolt_group.add(enemy_bolt)
+
+        enemy_bolt_group.update()
 
         # Update(move) all the bolts from the player
         if (frame_counter % FRAMES_PER_PLAYER_BOLT_MOVEMENT) == 0:
@@ -112,11 +159,21 @@ def level_one(display_surface):
             if block.get_destroyed():
                 block.kill()
 
+        enemies_hit_by_player = pygame.sprite.groupcollide(enemy_group, player_bolt_group, False, True)
+        for enemy in enemies_hit_by_player:
+            enemy.kill()
+
+        barrier_blocks_hit_by_enemies = pygame.sprite.groupcollide(barrier_group, enemy_bolt_group, False, True)
+        for block in barrier_blocks_hit_by_enemies:
+            block.damage()
+            if block.get_destroyed():
+                block.kill()
         # Update the barrier block's images
         barrier_group.update()
 
         # Iterate frame counter and reset after exactly 30 minutes
         frame_counter += 1
+
         if frame_counter >= (c.GAME_LOOPS_PER_SECOND * 60 * 60):
             frame_counter = 0
 
@@ -126,11 +183,47 @@ def level_one(display_surface):
         else:
             firing_cooldown -= 1
 
+        # This frame counter just goes up, may be a problem if the game goes on too long
+        # No idea about how Python handles number overflows
+        # Should be fine for an hour or so though
+
+        # Enemy Movement 150/
+        if frame_counter % 50 == 0:
+            if enemy_direction == "Right":
+                if enemy_x < 540:
+                    enemy_group.update(20, 0)
+                    enemy_x += 20
+                    for enemy in enemy_group:
+                        enemy.add_x(20)
+                else:
+                    enemy_direction = "Down"
+
+            if enemy_direction == "Left":
+                if enemy_x > 20:
+                    enemy_group.update(-20, 0)
+                    enemy_x -= 20
+                    for enemy in enemy_group:
+                        enemy.add_x(-20)
+                else:
+                    enemy_direction = "Down"
+
+            if enemy_direction == "Down":
+                enemy_group.update(0, 20)
+                enemy_y += 20
+                if enemy_x >= 540:
+                    enemy_direction = "Left"
+                else:
+                    enemy_direction = "Right"
+
         # Draw everything and flip the display
         display_surface.fill((0, 0, 0))
         player_group.draw(display_surface)
         player_bolt_group.draw(display_surface)
+        enemy_bolt_group.draw(display_surface)
+
         barrier_group.draw(display_surface)
+
+        enemy_group.draw(display_surface)
         pygame.display.flip()
 
     # Quits pygame incase the game loop is broken
