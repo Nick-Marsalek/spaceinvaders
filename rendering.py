@@ -120,7 +120,7 @@ class Renderer:
         elif state == GameState.LEVEL_ONE:
             # WORKING
             # This takes you to a new game loop for level 1
-            win = l1.level_one(self.display_surf)
+            win = l1.level_one(self.display_surf, 1, 0, 3, 300)
             if win:
                 l2.level_two(self.display_surf)
             else:

@@ -143,7 +143,7 @@ class BarrierBlock(Entity):
 class Enemy(Entity):
     def __init__(self, display_width, display_height, image, frame1img, frame2img):
         # For inheritance
-        Entity.__init__(self, display_width, display_height, (display_width / 2) - 15, display_height - 35, image)
+        Entity.__init__(self, c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, display_width, display_height, image)
         self.frame1img = frame1img
         self.frame2img = frame2img
         self.frame1 = False
@@ -153,8 +153,6 @@ class Enemy(Entity):
 
     def update(self, newx, newy):
         self.move(newx, newy)
-        self.x += newx
-        self.y += newy
         if self.frame1:
             self.image = self.frame1img
             self.frame1 = False
@@ -176,10 +174,11 @@ class Enemy(Entity):
 
 
 class EnemyBolt(Entity):
-    def __init__(self, display_width, display_height, image):
-        Entity.__init__(self, display_width, display_height, (display_width / 2) - 15, display_height - 35, image)
+    def __init__(self, display_width, display_height, firer, image):
+        Entity.__init__(self, display_width, display_height,
+                        firer.get_x() + (firer.get_entity_width() / 2) - (image.get_width() / 2),
+                        firer.get_y() + image.get_height(), image)
 
-        # Player that fired this bolt
         self.is_off_screen = False
 
     # Getter for whether bolt is off-screen
@@ -188,7 +187,7 @@ class EnemyBolt(Entity):
 
     def update(self):
         # Move up at constant speed forever
-        self.move(0, c.PLAYER_BOLT_MOVE_INCREMENTS)
+        self.move(0, 1)
 
         # Determine if this bolt is off-screen
         if (self.get_y() < 0):
