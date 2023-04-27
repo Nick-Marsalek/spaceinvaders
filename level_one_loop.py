@@ -27,6 +27,12 @@ def level_one(display_surface):
     enemy_frame1_image = pygame.image.load('Assets/enemy.png').convert_alpha()
     enemy_frame2_image = pygame.image.load('Assets/enemy2.png').convert_alpha()
 
+    # Load sounds into pygame
+    pew = pygame.mixer.Sound("Assets/shoot.wav")
+    enemy_dies = pygame.mixer.Sound("Assets/invaderkilled.wav")
+    player_dies = pygame.mixer.Sound("Assets/explosion.wav")
+    enemy_sound4 = pygame.mixer.Sound("Assets/fastinvader4.wav")
+
     # Create groups for the entities
     player_group = pygame.sprite.GroupSingle()
     player_bolt_group = pygame.sprite.Group()
@@ -76,6 +82,7 @@ def level_one(display_surface):
     for i in range(0, ENEMY_NUMBER):
         enemy = entity.Enemy(x, y, enemy_frame1_image, enemy_frame1_image, enemy_frame2_image)
         enemy_group.add(enemy)
+
         x += 100
     x = 30
     for i in range(0, ENEMY_NUMBER):
@@ -87,7 +94,7 @@ def level_one(display_surface):
     enemy_y = 0
     enemy_direction = "Right"
 
-    while True:
+    while (True):
         # Sets the game loop to run this many times each second
         # I.E. This many frames per second
         clock.tick(c.GAME_LOOPS_PER_SECOND)
@@ -139,7 +146,9 @@ def level_one(display_surface):
         if (len(player_bolt_group) < PLAYER_BOLTS_ONSCREEN_LIMIT) and player.get_firing() and firing_cooldown <= 0:
             player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
             firing_cooldown = PLAYER_FIRING_COOLDOWN
+            pygame.mixer.Sound.play(pew)
 
+        # Makes enemies fire bolts
         for enemy in enemy_group:
             randomNumber = random.randint(0, 500*(enemy in enemy_group))
             if randomNumber == 100:
@@ -159,21 +168,37 @@ def level_one(display_surface):
             if block.get_destroyed():
                 block.kill()
 
+        # Checks if enemies are hit by the player
         enemies_hit_by_player = pygame.sprite.groupcollide(enemy_group, player_bolt_group, False, True)
         for enemy in enemies_hit_by_player:
             enemy.kill()
+            pygame.mixer.Sound.play(enemy_dies)
 
+        # Checks if barriers are hit by the enemies
         barrier_blocks_hit_by_enemies = pygame.sprite.groupcollide(barrier_group, enemy_bolt_group, False, True)
         for block in barrier_blocks_hit_by_enemies:
             block.damage()
             if block.get_destroyed():
                 block.kill()
+
+        # Check if barrier blocks are being crushed by enemies and damage them
+        barrier_blocks_crushed_by_enemies = pygame.sprite.groupcollide(barrier_group, enemy_group, False, False)
+        for block in barrier_blocks_crushed_by_enemies:
+            block.damage()
+            if block.get_destroyed():
+                block.kill()
+
         # Update the barrier block's images
         barrier_group.update()
 
+        # Checks if any enemy bolts hit the player, and if so kill player
+        enemy_bolts_that_hit_player = pygame.sprite.groupcollide(enemy_bolt_group, player_group, True, True)
+        if len(enemy_bolts_that_hit_player) > 0:
+            player.kill()
+            pygame.mixer.Sound.play(player_dies)
+
         # Iterate frame counter and reset after exactly 30 minutes
         frame_counter += 1
-
         if frame_counter >= (c.GAME_LOOPS_PER_SECOND * 60 * 60):
             frame_counter = 0
 
@@ -183,16 +208,13 @@ def level_one(display_surface):
         else:
             firing_cooldown -= 1
 
-        # This frame counter just goes up, may be a problem if the game goes on too long
-        # No idea about how Python handles number overflows
-        # Should be fine for an hour or so though
-
         # Enemy Movement 150/
         if frame_counter % 50 == 0:
             if enemy_direction == "Right":
                 if enemy_x < 540:
                     enemy_group.update(20, 0)
                     enemy_x += 20
+                    pygame.mixer.Sound.play(enemy_sound4)
                     for enemy in enemy_group:
                         enemy.add_x(20)
                 else:
@@ -201,6 +223,7 @@ def level_one(display_surface):
             if enemy_direction == "Left":
                 if enemy_x > 20:
                     enemy_group.update(-20, 0)
+                    pygame.mixer.Sound.play(enemy_sound4)
                     enemy_x -= 20
                     for enemy in enemy_group:
                         enemy.add_x(-20)
