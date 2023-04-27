@@ -196,7 +196,11 @@ def level_one(display_surface):
         if len(enemy_bolts_that_hit_player) > 0:
             player.kill()
             pygame.mixer.Sound.play(player_dies)
-            break
+            return False
+
+        # Check if all enemies are killed
+        if len(enemy_group) <= 0:
+            return True
 
         # Iterate frame counter and reset after exactly 30 minutes
         frame_counter += 1
