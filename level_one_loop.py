@@ -218,19 +218,19 @@ def level_one(display_surface, level, score, lives, enemy_frames):
             lives -= 1
             pygame.time.wait(500)
             if lives < 0:
-                return False
+                return False, score, lives, enemy_frames
             else:
                 player = entity.Player(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player_image)
                 player_group.add(player)
 
         # Check if all enemies are killed and return win condition if so
         if len(enemy_group) <= 0:
-            return True
+            return True, score, lives, enemy_frames
 
         # Check if enemies has reached the ground and return lose condition if so
         for enemy in enemy_group:
             if enemy.get_y() + enemy_frame1_image.get_height() >= c.DISPLAY_HEIGHT - player_image.get_height():
-                return False
+                return False, score, lives, enemy_frames
 
         # Iterate frame counter and reset after exactly 30 minutes
         frame_counter += 1

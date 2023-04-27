@@ -23,10 +23,9 @@ def add_score_to_file(score):
     with open('scores.txt', 'a') as f:
         f.write(str(score) + '\n')
 
-def game_over(display_surface):
-    score = 40
-
+def game_over(display_surface, score):
     # Add the current score to the file
+    show_score = score
     add_score_to_file(score)
 
     while True:
@@ -44,7 +43,7 @@ def game_over(display_surface):
         display_surface.fill((0, 0, 0))
 
         # Display the score
-        score_text = SCORE_FONT.render(f"Score: {score}", True, (255, 255, 255))
+        score_text = SCORE_FONT.render(f"Score: {show_score}", True, (255, 255, 255))
         score_rect = score_text.get_rect(center=(800 // 2, 600 // 2 - FONT_SIZE))
         display_surface.blit(score_text, score_rect)
 
