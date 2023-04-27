@@ -1,5 +1,7 @@
 import pygame
 import pygame.image
+
+import game_over as go
 from gamestate import GameState
 import level_one_loop as l1
 
@@ -118,6 +120,8 @@ class Renderer:
             # WORKING
             # This takes you to a new game loop for level 1
             l1.level_one(self.display_surf)
+            # This takes you to the game-over screen once the game loop is broken
+            go.game_over(self.display_surf)
             # pass
 
     def handle_events(self, event):

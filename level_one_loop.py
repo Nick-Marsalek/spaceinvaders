@@ -196,6 +196,7 @@ def level_one(display_surface):
         if len(enemy_bolts_that_hit_player) > 0:
             player.kill()
             pygame.mixer.Sound.play(player_dies)
+            break
 
         # Iterate frame counter and reset after exactly 30 minutes
         frame_counter += 1
@@ -250,7 +251,7 @@ def level_one(display_surface):
         pygame.display.flip()
 
     # Quits pygame incase the game loop is broken
-    pygame.quit()
+    # pygame.quit()
 
 
 # Function to build each barrier
