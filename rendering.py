@@ -2,9 +2,8 @@ import pygame
 import pygame.image
 
 import game_over as go
-import level_two as l2
 from gamestate import GameState
-import level_one_loop as l1
+import level_loop as l1
 
 
 # Define a Button class to create interactive buttons

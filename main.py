@@ -1,7 +1,7 @@
 import pygame
 import sys
 from gamestate import GameState
-from rendering import Renderer, Button
+from rendering import Renderer
 
 
 def on_cleanup():

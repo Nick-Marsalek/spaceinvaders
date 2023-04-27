@@ -2,7 +2,7 @@ import sys
 import random
 import pygame
 import entity
-import GAME_CONSTANTS as c
+import GAME_CONSTANTS as C
 
 # Level constants
 FRAMES_PER_PLAYER_MOVEMENT = 10
@@ -13,11 +13,6 @@ BARRIER_NUMBER = 4
 BARRIER_DISTANCE = 40
 ENEMY_NUMBER = 11
 ENEMY_ROWS = 5
-
-ENEMY_DISTANCE_FROM_TOP = 40
-ENEMY_DISTANCE_FROM_SIDE = 30
-ENEMY_SPACE_BETWEEN = 10
-
 
 def level_one(display_surface, level, score, lives, enemy_frames):
     # Load images into pygame
@@ -49,7 +44,6 @@ def level_one(display_surface, level, score, lives, enemy_frames):
     clock = pygame.time.Clock()
     frame_counter = 0
     firing_cooldown = 0
-    enemy_frames_to_move = 300
     level = level
     score = score
     lives = lives
@@ -62,7 +56,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
     enemy_bolt_group = pygame.sprite.Group()
 
     # Create the player and put it in its own group
-    player = entity.Player(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player_image)
+    player = entity.Player(C.DISPLAY_WIDTH, C.DISPLAY_HEIGHT, player_image)
     player_group.add(player)
 
     # enemy = entity.Enemy(30, 40, enemy_frame1_image, enemy_frame1_image, enemy_frame2_image)
@@ -74,31 +68,31 @@ def level_one(display_surface, level, score, lives, enemy_frames):
     barrier_width = bb_image_4.get_width() * 4
     barrier_height = bb_image_4.get_width() * 3
 
-    segment_width = c.DISPLAY_WIDTH / BARRIER_NUMBER
+    segment_width = C.DISPLAY_WIDTH / BARRIER_NUMBER
     leftover_width = segment_width - barrier_width
 
-    barrier_y = c.DISPLAY_HEIGHT - player.get_entity_height() - barrier_height - BARRIER_DISTANCE
+    barrier_y = C.DISPLAY_HEIGHT - player.get_entity_height() - barrier_height - BARRIER_DISTANCE
     barrier_x = leftover_width / 2
     barrier_x_offset = leftover_width + barrier_width
 
     # Create barriers with build_barrier function
     for i in range(BARRIER_NUMBER):
-        build_barrier(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, barrier_x, barrier_y, barrier_group,
+        build_barrier(C.DISPLAY_WIDTH, C.DISPLAY_HEIGHT, barrier_x, barrier_y, barrier_group,
                       bb_image_4, bb_image_3, bb_image_2, bb_image_1)
         barrier_x += barrier_x_offset
 
     # Spawn Enemies
     # spawnEnemies(enemy_frame1_image, enemy_frame1_image, enemy_frame2_image, enemy_group)
-    x = ENEMY_DISTANCE_FROM_SIDE
-    y = ENEMY_DISTANCE_FROM_TOP
+    x = C.ENEMY_DISTANCE_FROM_SIDE
+    y = C.ENEMY_DISTANCE_FROM_TOP
 
     for i in range(ENEMY_ROWS):
         for i in range(0, ENEMY_NUMBER):
             enemy = entity.Enemy(x, y, enemy_frame1_image, enemy_frame1_image, enemy_frame2_image)
             enemy_group.add(enemy)
-            x += enemy.get_entity_width() + ENEMY_SPACE_BETWEEN
+            x += enemy.get_entity_width() + C.ENEMY_SPACE_BETWEEN
         y += enemy.get_entity_height() + 12
-        x = ENEMY_DISTANCE_FROM_SIDE
+        x = C.ENEMY_DISTANCE_FROM_SIDE
 
     left_enemy_boundary = x
     right_enemy_boundary = enemy.get_enemy_x() + enemy.get_entity_width()
@@ -109,7 +103,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
     while (True):
         # Sets the game loop to run this many times each second
         # I.E. This many frames per second
-        clock.tick(c.GAME_LOOPS_PER_SECOND)
+        clock.tick(C.GAME_LOOPS_PER_SECOND)
 
         # Handle user input
         events = pygame.event.get()
@@ -163,7 +157,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
         # Fire a bolt only if there aren't too many bolts already on-screen, with cooldown period
         # This matches the real Space Invaders behaviour more closely if limit is set to 1
         if (len(player_bolt_group) < PLAYER_BOLTS_ONSCREEN_LIMIT) and player.get_firing() and firing_cooldown <= 0:
-            player_bolt_group.add(entity.PlayerBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player, player_bolt_image))
+            player_bolt_group.add(entity.PlayerBolt(C.DISPLAY_WIDTH, C.DISPLAY_HEIGHT, player, player_bolt_image))
             firing_cooldown = PLAYER_FIRING_COOLDOWN
             pygame.mixer.Sound.play(pew)
 
@@ -171,7 +165,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
         for enemy in enemy_group:
             randomNumber = random.randint(0, 2500*(enemy in enemy_group))
             if randomNumber == 100:
-                enemy_bolt = entity.EnemyBolt(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, enemy, player_bolt_image)
+                enemy_bolt = entity.EnemyBolt(C.DISPLAY_WIDTH, C.DISPLAY_HEIGHT, enemy, player_bolt_image)
                 enemy_bolt_group.add(enemy_bolt)
         enemy_bolt_group.update()
 
@@ -220,7 +214,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
             if lives < 0:
                 return False, score, lives, enemy_frames
             else:
-                player = entity.Player(c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, player_image)
+                player = entity.Player(C.DISPLAY_WIDTH, C.DISPLAY_HEIGHT, player_image)
                 player_group.add(player)
 
         # Check if all enemies are killed and return win condition if so
@@ -229,12 +223,12 @@ def level_one(display_surface, level, score, lives, enemy_frames):
 
         # Check if enemies has reached the ground and return lose condition if so
         for enemy in enemy_group:
-            if enemy.get_y() + enemy_frame1_image.get_height() >= c.DISPLAY_HEIGHT - player_image.get_height():
+            if enemy.get_y() + enemy_frame1_image.get_height() >= C.DISPLAY_HEIGHT - player_image.get_height():
                 return False, score, lives, enemy_frames
 
         # Iterate frame counter and reset after exactly 30 minutes
         frame_counter += 1
-        if frame_counter >= (c.GAME_LOOPS_PER_SECOND * 60 * 60):
+        if frame_counter >= (C.GAME_LOOPS_PER_SECOND * 60 * 60):
             frame_counter = 0
 
         # Tick down firing cooldown timer, but don't let it go below 0
@@ -246,7 +240,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
         # Enemy Movement 150/
         if frame_counter % enemy_frames == 0:
             if enemy_direction == "Right":
-                if right_enemy_boundary < c.DISPLAY_WIDTH - ENEMY_DISTANCE_FROM_SIDE:
+                if right_enemy_boundary < C.DISPLAY_WIDTH - C.ENEMY_DISTANCE_FROM_SIDE:
                     enemy_group.update(20, 0)
                     left_enemy_boundary += 20
                     right_enemy_boundary += 20
@@ -255,7 +249,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
                     enemy_direction = "Down"
 
             if enemy_direction == "Left":
-                if left_enemy_boundary > ENEMY_DISTANCE_FROM_SIDE:
+                if left_enemy_boundary > C.ENEMY_DISTANCE_FROM_SIDE:
                     enemy_group.update(-20, 0)
                     pygame.mixer.Sound.play(enemy_sound_now)
                     left_enemy_boundary -= 20
@@ -272,7 +266,7 @@ def level_one(display_surface, level, score, lives, enemy_frames):
                 if terror_closeness % 3 == 0:
                     if enemy_frames > 20:
                         enemy_frames -= 20
-                if right_enemy_boundary >= c.DISPLAY_WIDTH - ENEMY_DISTANCE_FROM_SIDE:
+                if right_enemy_boundary >= C.DISPLAY_WIDTH - C.ENEMY_DISTANCE_FROM_SIDE:
                     enemy_direction = "Left"
                 else:
                     enemy_direction = "Right"
