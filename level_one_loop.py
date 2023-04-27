@@ -115,14 +115,14 @@ def level_one(display_surface, level, score, lives, enemy_frames):
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if (event.key == pygame.K_RIGHT) or (event.key == pygame.K_a):
+                if (event.key == pygame.K_LEFT) or (event.key == pygame.K_a):
                     player.set_moving_left(True)
                 if (event.key == pygame.K_RIGHT) or (event.key == pygame.K_d):
                     player.set_moving_right(True)
                 if (event.key == pygame.K_UP) or (event.key == pygame.K_SPACE) or (event.key == pygame.K_w):
                     player.set_firing(True)
             elif event.type == pygame.KEYUP:
-                if (event.key == pygame.K_RIGHT) or (event.key == pygame.K_a):
+                if (event.key == pygame.K_LEFT) or (event.key == pygame.K_a):
                     player.set_moving_left(False)
                 if (event.key == pygame.K_RIGHT) or (event.key == pygame.K_d):
                     player.set_moving_right(False)

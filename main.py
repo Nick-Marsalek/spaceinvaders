@@ -15,6 +15,10 @@ class Game:
         pygame.init()
         pygame.display.set_caption("Space Invaders")
 
+        # Set the window icon
+        icon = pygame.image.load("Assets/enemy2.png")
+        pygame.display.set_icon(icon)
+
         # Set the width and height of the game window
         self.width = 800
         self.height = 600
