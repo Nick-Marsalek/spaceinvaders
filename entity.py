@@ -1,5 +1,5 @@
 import pygame
-import GAME_CONSTANTS as c
+import GAME_CONSTANTS as C
 
 
 class Entity(pygame.sprite.Sprite):
@@ -58,10 +58,10 @@ class Player(Entity):
 
     def update(self):
         if ((self.get_x() >= 1) and self.moving_left == True):
-            self.move(-c.PLAYER_MOVE_INCREMENTS, 0)
+            self.move(-C.PLAYER_MOVE_INCREMENTS, 0)
 
         if ((self.get_x() <= (self.display_width - self.width)) and self.moving_right == True):
-            self.move(c.PLAYER_MOVE_INCREMENTS, 0)
+            self.move(C.PLAYER_MOVE_INCREMENTS, 0)
 
     # Getters for Player's states
     def get_firing(self):
@@ -95,7 +95,7 @@ class PlayerBolt(Entity):
 
     def update(self):
         # Move up at constant speed forever
-        self.move(0, -c.PLAYER_BOLT_MOVE_INCREMENTS)
+        self.move(0, -C.PLAYER_BOLT_MOVE_INCREMENTS)
 
         # Determine if this bolt is off-screen
         if (self.get_y() < 0):
@@ -143,7 +143,7 @@ class BarrierBlock(Entity):
 class Enemy(Entity):
     def __init__(self, display_width, display_height, image, frame1img, frame2img):
         # For inheritance
-        Entity.__init__(self, c.DISPLAY_WIDTH, c.DISPLAY_HEIGHT, display_width, display_height, image)
+        Entity.__init__(self, C.DISPLAY_WIDTH, C.DISPLAY_HEIGHT, display_width, display_height, image)
         self.frame1img = frame1img
         self.frame2img = frame2img
         self.frame1 = False
@@ -174,6 +174,7 @@ class Enemy(Entity):
 
 
 class EnemyBolt(Entity):
+    # For inheritance
     def __init__(self, display_width, display_height, firer, image):
         Entity.__init__(self, display_width, display_height,
                         firer.get_x() + (firer.get_entity_width() / 2) - (image.get_width() / 2),
