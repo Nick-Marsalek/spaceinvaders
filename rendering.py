@@ -118,14 +118,24 @@ class Renderer:
             pygame.draw.rect(self.display_surf, (255, 0, 0), self.exit_button_rect, 3)
             self.quit_button.draw(self.display_surf)
         elif state == GameState.LEVEL_ONE:
-            # WORKING
+            winner = [True]
+            level = 1
+            score = 0
+            lives = 3
+            enemy_frames = 300
+
+            while(True):
+
             # This takes you to a new game loop for level 1
-            win = l1.level_one(self.display_surf)
-            if win:
-                l2.level_two(self.display_surf)
-            else:
-                # This takes you to the game-over screen once the game loop is broken
-                go.game_over(self.display_surf)
+                if winner[0]:
+                    winner = l1.level_one(self.display_surf, level, score, lives, enemy_frames)
+                    level += 1
+                    score = winner[1]
+                    lives = winner[2] + 1
+                    enemy_frames = winner[3] - 20
+                else:
+                    # This takes you to the game-over screen once the game loop is broken
+                    go.game_over(self.display_surf, score)
 
             # pass
 
